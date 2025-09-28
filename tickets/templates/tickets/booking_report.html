@@ -1,0 +1,214 @@
+{% extends 'tickets/base.html' %}
+
+{% block title %}Booking Report - Sibford Fundraising Event{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl sm:text-3xl font-bold">Booking Report</h1>
+    <a href="{% url 'admin:tickets_booking_changelist' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-stone-800 hover:bg-stone-900">
+        Admin Dashboard
+    </a>
+</div>
+
+<!-- Statistics Overview -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white p-4 rounded-lg shadow-sm border border-stone-200">
+        <h3 class="text-sm font-medium text-stone-500">Total Bookings</h3>
+        <p class="text-2xl font-semibold">{{ total_bookings }}</p>
+    </div>
+    <div class="bg-white p-4 rounded-lg shadow-sm border border-stone-200">
+        <h3 class="text-sm font-medium text-stone-500">Total Tickets</h3>
+        <p class="text-2xl font-semibold">{{ total_tickets }}</p>
+    </div>
+    <div class="bg-white p-4 rounded-lg shadow-sm border border-stone-200">
+        <h3 class="text-sm font-medium text-stone-500">Total Amount</h3>
+        <p class="text-2xl font-semibold">£{{ total_amount }}</p>
+    </div>
+    <div class="bg-white p-4 rounded-lg shadow-sm border border-stone-200">
+        <h3 class="text-sm font-medium text-stone-500">Gift Aid Bookings</h3>
+        <p class="text-2xl font-semibold">{{ gift_aid_count }}</p>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 gap-6">
+    <div class="bg-white rounded-lg shadow-sm border border-stone-200 overflow-hidden">
+        <!-- Filter Form -->
+        <div class="bg-stone-50 border-b border-stone-200 p-4">
+            <form method="get" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label for="{{ filter_form.payment_status.id_for_label }}" class="block text-sm font-medium text-stone-700 mb-1">
+                            Payment Status
+                        </label>
+                        {{ filter_form.payment_status }}
+                    </div>
+                    <div>
+                        <label for="{{ filter_form.gift_aid.id_for_label }}" class="block text-sm font-medium text-stone-700 mb-1">
+                            Gift Aid
+                        </label>
+                        {{ filter_form.gift_aid }}
+                    </div>
+                    <div>
+                        <label for="{{ filter_form.search.id_for_label }}" class="block text-sm font-medium text-stone-700 mb-1">
+                            Search
+                        </label>
+                        {{ filter_form.search }}
+                    </div>
+                </div>
+                <div class="flex justify-end">
+                    <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-stone-600 hover:bg-stone-700">
+                        Filter Results
+                    </button>
+                    {% if request.GET %}
+                        <a href="{% url 'booking_report' %}" class="ml-3 inline-flex items-center px-4 py-2 border border-stone-300 shadow-sm text-sm font-medium rounded-md text-stone-700 bg-white hover:bg-stone-50">
+                            Reset Filters
+                        </a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+        
+        <!-- Booking List -->
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-stone-200">
+                <thead class="bg-stone-100">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Reference</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Name</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Email</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Tickets</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Amount</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Gift Aid</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Status</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Date</th>
+                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-stone-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-stone-200">
+                    {% for booking in bookings %}
+                        <tr class="hover:bg-stone-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-stone-900">
+                                {{ booking.ref }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-stone-800">
+                                {{ booking.full_name }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-stone-500">
+                                <a href="mailto:{{ booking.email }}" class="text-stone-600 hover:text-stone-900">
+                                    {{ booking.email }}
+                                </a>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-stone-500">
+                                {{ booking.num_tickets }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-stone-800">
+                                £{{ booking.donation_amount }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {% if booking.gift_aid %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-teal-100 text-teal-800">
+                                        Yes
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-stone-800">
+                                        No
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {% if booking.is_paid %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        <svg class="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        Paid
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                                        <span class="h-2 w-2 mr-1.5 rounded-full bg-amber-400"></span>
+                                        Pending
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-stone-500">
+                                {{ booking.created_at|date:"d M Y" }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <a href="{% url 'admin:tickets_booking_change' booking.id %}" class="text-indigo-600 hover:text-indigo-900">
+                                    Edit
+                                </a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="9" class="px-6 py-10 text-center text-stone-500">
+                                <p class="text-lg">No bookings found</p>
+                                <p class="text-sm mt-2">Try adjusting your filters or search criteria</p>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-stone-200 sm:px-6">
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                    <p class="text-sm text-stone-700">
+                        Showing
+                        <span class="font-medium">{{ page_obj.start_index }}</span>
+                        to
+                        <span class="font-medium">{{ page_obj.end_index }}</span>
+                        of
+                        <span class="font-medium">{{ paginator.count }}</span>
+                        results
+                    </p>
+                </div>
+                <div>
+                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                        {% if page_obj.has_previous %}
+                            <a href="?{% if request.GET %}{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}{% endif %}page={{ page_obj.previous_page_number }}" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-stone-300 bg-white text-sm font-medium text-stone-500 hover:bg-stone-50">
+                                <span class="sr-only">Previous</span>
+                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </a>
+                        {% endif %}
+                        
+                        <span class="relative inline-flex items-center px-4 py-2 border border-stone-300 bg-white text-sm font-medium">
+                            Page {{ page_obj.number }} of {{ paginator.num_pages }}
+                        </span>
+                        
+                        {% if page_obj.has_next %}
+                            <a href="?{% if request.GET %}{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}{% endif %}page={{ page_obj.next_page_number }}" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-stone-300 bg-white text-sm font-medium text-stone-500 hover:bg-stone-50">
+                                <span class="sr-only">Next</span>
+                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </a>
+                        {% endif %}
+                    </nav>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Payment Status Summary -->
+    <div class="bg-white rounded-lg shadow-sm border border-stone-200 overflow-hidden p-6">
+        <h2 class="text-lg font-medium mb-4">Payment Status Summary</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-green-50 p-4 rounded-md border border-green-100">
+                <h3 class="text-sm font-medium text-green-800 mb-1">Paid Amount</h3>
+                <p class="text-xl font-semibold text-green-700">£{{ paid_amount }}</p>
+            </div>
+            <div class="bg-amber-50 p-4 rounded-md border border-amber-100">
+                <h3 class="text-sm font-medium text-amber-800 mb-1">Pending Amount</h3>
+                <p class="text-xl font-semibold text-amber-700">£{{ unpaid_amount }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

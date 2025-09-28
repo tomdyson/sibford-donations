@@ -79,3 +79,42 @@ class BookingForm(forms.ModelForm):
                 self.fields['gift_aid_confirmation'].widget.attrs.update({'class': self.fields['gift_aid_confirmation'].widget.attrs.get('class', '') + ' border-rose-300'})
         
         return cleaned_data
+
+
+class ReportFilterForm(forms.Form):
+    """Form for filtering the booking report."""
+    PAYMENT_STATUS_CHOICES = (
+        ('', 'All Bookings'),
+        ('paid', 'Paid'),
+        ('unpaid', 'Unpaid'),
+    )
+    
+    GIFT_AID_CHOICES = (
+        ('', 'All Bookings'),
+        ('yes', 'With Gift Aid'),
+        ('no', 'Without Gift Aid'),
+    )
+    
+    payment_status = forms.ChoiceField(
+        choices=PAYMENT_STATUS_CHOICES,
+        required=False,
+        widget=forms.Select(attrs={
+            'class': 'w-full px-4 py-2 border border-stone-300 rounded-md focus:ring-2 focus:ring-stone-500 focus:border-stone-500'
+        })
+    )
+    
+    gift_aid = forms.ChoiceField(
+        choices=GIFT_AID_CHOICES,
+        required=False,
+        widget=forms.Select(attrs={
+            'class': 'w-full px-4 py-2 border border-stone-300 rounded-md focus:ring-2 focus:ring-stone-500 focus:border-stone-500'
+        })
+    )
+    
+    search = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'w-full px-4 py-2 border border-stone-300 rounded-md focus:ring-2 focus:ring-stone-500 focus:border-stone-500',
+            'placeholder': 'Search by name or email'
+        })
+    )
