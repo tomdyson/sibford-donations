@@ -30,4 +30,4 @@ WORKDIR /app/sibford_donations
 RUN python manage.py collectstatic --noinput
 
 # Run Gunicorn
-CMD gunicorn sibford_donations.wsgi:application --bind 0.0.0.0:$PORT
+CMD gunicorn sibford_donations.wsgi:application --bind 0.0.0.0:8000
