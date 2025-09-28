@@ -128,3 +128,22 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Email Configuration
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.resend.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "resend"
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")  # Resend API key
+DEFAULT_FROM_EMAIL = "Sibford CATS event <sibford@chloe.tomd.org>"
+
+# Bank details for payment instructions
+BANK_DETAILS = {
+    'account_name': 'Sibford Fundraising',
+    'sort_code': '12-34-56',
+    'account_number': '12345678',
+}
+
+# Admin notification email recipients
+ADMIN_NOTIFICATION_EMAILS = ['tom@torchbox.com']

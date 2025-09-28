@@ -3,9 +3,12 @@ from django.urls import reverse
 from django.views.generic import CreateView, TemplateView, ListView
 from django.contrib import messages
 from django.db.models import Q, Sum
+from django.conf import settings
 
 from .models import Booking
 from .forms import BookingForm, ReportFilterForm
+from .utils import send_booking_confirmation_email, send_admin_notification_email
+
 
 
 
@@ -23,8 +26,15 @@ class BookingCreateView(CreateView):
         # Save the booking to the database
         self.object = form.save()
         
-        # Add a success message
-        messages.success(self.request, "Your booking was successful!")
+        # Send confirmation email to the customer
+        email_sent = send_booking_confirmation_email(self.request, self.object)
+        if email_sent:
+            messages.success(self.request, "Your booking was successful! A confirmation email has been sent.")
+        else:
+            messages.warning(self.request, "Your booking was successful, but there was an issue sending the confirmation email.")
+        
+        # Send notification email to admins
+        send_admin_notification_email(self.request, self.object)
         
         # Redirect to the confirmation page with the booking ID
         return redirect('booking_confirmation', pk=self.object.id)
@@ -40,10 +50,9 @@ class BookingConfirmationView(TemplateView):
             booking = Booking.objects.get(id=booking_id)
             context['booking'] = booking
             context['payment_reference'] = booking.payment_reference()
+            # Use bank details from settings
             context['bank_details'] = {
-                'account_name': 'Sibford Fundraising',
-                'sort_code': '12-34-56',
-                'account_number': '12345678',
+                **settings.BANK_DETAILS,
                 'reference': booking.payment_reference(),
             }
         except Booking.DoesNotExist:
