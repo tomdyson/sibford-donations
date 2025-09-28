@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-tk_eyo!^+6ue2(*8xd1tik3fh=-uxwtyhk8+8-g8t(o0==e5#u
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
-CSRF_TRUSTED_ORIGINS = ["*"]
+CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', 'http://localhost,http://127.0.0.1,https://cats.co.tomd.org').split(',')
 
 # Application definition
 

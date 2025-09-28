@@ -29,5 +29,9 @@ WORKDIR /app/
 # Collect static files
 RUN python manage.py collectstatic --noinput
 
-# Run Gunicorn
-CMD gunicorn sibford_donations.wsgi:application --bind 0.0.0.0:8000
+# Create script to run migrations and start the application
+RUN echo '#!/bin/bash\npython manage.py migrate\nexec gunicorn sibford_donations.wsgi:application --bind 0.0.0.0:${PORT:-8000}' > /app/entrypoint.sh \
+    && chmod +x /app/entrypoint.sh
+
+# Run migrations and start application
+CMD ["/app/entrypoint.sh"]
