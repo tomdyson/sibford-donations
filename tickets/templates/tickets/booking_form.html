@@ -5,9 +5,9 @@
 {% block content %}
 <div class="bg-white rounded-lg shadow-sm border border-stone-200 overflow-hidden">
     <div class="p-6">
-        <h2 class="text-2xl sm:text-3xl font-bold mb-6">Book Tickets for Our Fundraising Event</h2>
-        
-        <form method="post" x-data="{ 
+        <h2 class="text-2xl sm:text-3xl font-bold mb-6">Reserve your tickets</h2>
+
+        <form method="post" x-data="{
             numTickets: 1,
             suggestedDonation: {{ suggested_donation }},
             donationAmount: {{ suggested_donation }},
@@ -17,12 +17,12 @@
             }
         }">
             {% csrf_token %}
-            
+
             <div class="space-y-8">
                 <!-- Personal Information -->
                 <div class="border-b border-stone-200 pb-6">
                     <h3 class="text-lg font-semibold mb-4">Your Information</h3>
-                    
+
                     <div class="grid grid-cols-1 gap-4">
                         <div>
                             <label for="{{ form.full_name.id_for_label }}" class="block text-sm font-medium text-stone-700 mb-1">
@@ -33,7 +33,7 @@
                             <p class="text-rose-600 text-sm mt-1">{{ form.full_name.errors.0 }}</p>
                             {% endif %}
                         </div>
-                        
+
                         <div>
                             <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-stone-700 mb-1">
                                 Email Address*
@@ -43,45 +43,45 @@
                             <p class="text-rose-600 text-sm mt-1">{{ form.email.errors.0 }}</p>
                             {% endif %}
                         </div>
-                        
-                        <div>
+
+                        <!--<div>
                             <label for="{{ form.phone_number.id_for_label }}" class="block text-sm font-medium text-stone-700 mb-1">
                                 Phone Number (optional)
                             </label>
                             {{ form.phone_number }}
-                        </div>
+                        </div>-->
                     </div>
                 </div>
-                
+
                 <!-- Ticket Information -->
                 <div class="border-b border-stone-200 pb-6">
                     <h3 class="text-lg font-semibold mb-4">Ticket Details</h3>
-                    
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label for="{{ form.num_tickets.id_for_label }}" class="block text-sm font-medium text-stone-700 mb-1">
                                 Number of Tickets*
                             </label>
-                            <input type="number" name="num_tickets" id="{{ form.num_tickets.id_for_label }}" 
-                                class="w-full px-4 py-2 border border-stone-300 rounded-md focus:ring-2 focus:ring-stone-500 focus:border-stone-500" 
-                                min="1" 
-                                x-model="numTickets" 
+                            <input type="number" name="num_tickets" id="{{ form.num_tickets.id_for_label }}"
+                                class="w-full px-4 py-2 border border-stone-300 rounded-md focus:ring-2 focus:ring-stone-500 focus:border-stone-500"
+                                min="1"
+                                x-model="numTickets"
                                 @input="updateAmount()">
                             {% if form.num_tickets.errors %}
                             <p class="text-rose-600 text-sm mt-1">{{ form.num_tickets.errors.0 }}</p>
                             {% endif %}
                         </div>
-                        
+
                         <div>
                             <label for="{{ form.donation_amount.id_for_label }}" class="block text-sm font-medium text-stone-700 mb-1">
                                 Donation Amount (£)*
                             </label>
-                            <input type="number" name="donation_amount" id="{{ form.donation_amount.id_for_label }}" 
-                                class="w-full px-4 py-2 border border-stone-300 rounded-md focus:ring-2 focus:ring-stone-500 focus:border-stone-500" 
-                                min="1" step="0.01" 
+                            <input type="number" name="donation_amount" id="{{ form.donation_amount.id_for_label }}"
+                                class="w-full px-4 py-2 border border-stone-300 rounded-md focus:ring-2 focus:ring-stone-500 focus:border-stone-500"
+                                min="1" step="0.01"
                                 x-model="donationAmount">
                             <p class="text-sm text-stone-500 mt-1">
-                                Suggested donation: £<span x-text="suggestedDonation"></span> per ticket 
+                                Suggested donation: £<span x-text="suggestedDonation"></span> per ticket
                                 (£<span x-text="numTickets * suggestedDonation"></span> total)
                             </p>
                             {% if form.donation_amount.errors %}
@@ -90,15 +90,15 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Gift Aid Information -->
                 <div>
                     <h3 class="text-lg font-semibold mb-4">Gift Aid</h3>
-                    
+
                     <div class="mb-4">
                         <div class="flex items-start">
-                            <input type="checkbox" name="gift_aid" id="{{ form.gift_aid.id_for_label }}" 
-                                class="mt-1 mr-2 h-4 w-4 rounded border-stone-300 text-stone-600 focus:ring-stone-500" 
+                            <input type="checkbox" name="gift_aid" id="{{ form.gift_aid.id_for_label }}"
+                                class="mt-1 mr-2 h-4 w-4 rounded border-stone-300 text-stone-600 focus:ring-stone-500"
                                 x-model="giftAid">
                             <label for="{{ form.gift_aid.id_for_label }}" class="text-sm text-stone-700">
                                 I would like to Gift Aid this donation
@@ -108,11 +108,11 @@
                             Gift Aid allows us to claim an extra 25% from the tax you pay, at no extra cost to you.
                         </p>
                     </div>
-                    
+
                     <div x-show="giftAid" class="bg-stone-50 p-4 rounded-md border border-stone-200 space-y-4" x-cloak>
                         <div class="mb-4">
                             <div class="flex items-start">
-                                <input type="checkbox" name="gift_aid_confirmation" id="{{ form.gift_aid_confirmation.id_for_label }}" 
+                                <input type="checkbox" name="gift_aid_confirmation" id="{{ form.gift_aid_confirmation.id_for_label }}"
                                     class="mt-1 mr-2 h-4 w-4 rounded border-stone-300 text-stone-600 focus:ring-stone-500">
                                 <label for="{{ form.gift_aid_confirmation.id_for_label }}" class="text-sm text-stone-700">
                                     {{ form.gift_aid_confirmation.label }}
@@ -122,7 +122,7 @@
                             <p class="text-rose-600 text-sm mt-1 pl-6">{{ form.gift_aid_confirmation.errors.0 }}</p>
                             {% endif %}
                         </div>
-                        
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label for="{{ form.address_line1.id_for_label }}" class="block text-sm font-medium text-stone-700 mb-1">
@@ -133,14 +133,14 @@
                                 <p class="text-rose-600 text-sm mt-1">{{ form.address_line1.errors.0 }}</p>
                                 {% endif %}
                             </div>
-                            
+
                             <div>
                                 <label for="{{ form.address_line2.id_for_label }}" class="block text-sm font-medium text-stone-700 mb-1">
                                     Address Line 2 (optional)
                                 </label>
                                 {{ form.address_line2 }}
                             </div>
-                            
+
                             <div>
                                 <label for="{{ form.city.id_for_label }}" class="block text-sm font-medium text-stone-700 mb-1">
                                     City/Town*
@@ -150,7 +150,7 @@
                                 <p class="text-rose-600 text-sm mt-1">{{ form.city.errors.0 }}</p>
                                 {% endif %}
                             </div>
-                            
+
                             <div>
                                 <label for="{{ form.postcode.id_for_label }}" class="block text-sm font-medium text-stone-700 mb-1">
                                     Postcode*
@@ -163,7 +163,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="text-center pt-4">
                     <button type="submit" class="px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-stone-800 hover:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-stone-500">
                         Book Tickets

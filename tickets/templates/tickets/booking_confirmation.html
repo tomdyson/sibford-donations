@@ -22,14 +22,14 @@
                 <h2 class="text-2xl sm:text-3xl font-bold">Booking Confirmed!</h2>
                 <p class="text-stone-600 mt-2">Thank you for your booking. We're looking forward to seeing you at the event.</p>
             </div>
-            
+
             <div class="border-t border-b border-stone-200 py-6 mb-6">
                 <h3 class="text-lg font-semibold mb-4">Booking Details</h3>
-                
+
                 <div class="space-y-3">
                     <div class="flex justify-between">
                         <span class="text-stone-600">Booking Reference:</span>
-                        <span class="font-medium">{{ booking_reference }}</span>
+                        <span class="font-medium">{{ booking.booking_reference }}</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="text-stone-600">Name:</span>
@@ -60,11 +60,11 @@
                     {% endif %}
                 </div>
             </div>
-            
+
             <div class="bg-stone-50 p-6 rounded-lg border border-stone-200 mb-8">
                 <h3 class="text-lg font-semibold mb-4">Payment Instructions</h3>
                 <p class="mb-4">Please make your payment via bank transfer using the details below:</p>
-                
+
                 <div class="space-y-2 mb-4">
                     <div class="flex justify-between">
                         <span class="text-stone-700 font-medium">Account Name:</span>
@@ -87,7 +87,7 @@
                         <span class="font-bold">£{{ booking.donation_amount }}</span>
                     </div>
                 </div>
-                
+
                 <div class="mt-4 p-4 bg-amber-50 rounded-md border border-amber-200">
                     <div class="flex">
                         <div class="flex-shrink-0">
@@ -103,7 +103,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="text-center">
                 <p class="mb-4">We've sent a confirmation email to <strong>{{ booking.email }}</strong>.</p>
                 <p>If you have any questions, please contact us at <a href="mailto:event@sibfordfundraising.org" class="text-indigo-600 hover:text-indigo-500">event@sibfordfundraising.org</a></p>
