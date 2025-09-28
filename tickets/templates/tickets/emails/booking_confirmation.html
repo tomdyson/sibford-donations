@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Booking Confirmation - Sibford CATS Event</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .content {
+            padding: 20px 0;
+        }
+        .footer {
+            padding: 20px 0;
+            border-top: 1px solid #eee;
+            font-size: 12px;
+            color: #777;
+            text-align: center;
+        }
+        .booking-details {
+            background-color: #f9f9f9;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .payment-details {
+            background-color: #f5f5f5;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        .important-note {
+            background-color: #fff3cd;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            border-left: 4px solid #ffc107;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Booking Confirmation</h1>
+            <p>Sibford CATS Fundraising Event</p>
+        </div>
+        
+        <div class="content">
+            <p>Dear {{ booking.full_name }},</p>
+            
+            <p>Thank you for booking tickets for our Sibford CATS fundraising event. We're looking forward to seeing you there!</p>
+            
+            <div class="booking-details">
+                <h2>Your Booking Details</h2>
+                <table>
+                    <tr>
+                        <th>Booking Reference:</th>
+                        <td>{{ booking.booking_reference }}</td>
+                    </tr>
+                    <tr>
+                        <th>Number of Tickets:</th>
+                        <td>{{ booking.num_tickets }}</td>
+                    </tr>
+                    <tr>
+                        <th>Total Donation:</th>
+                        <td>£{{ booking.donation_amount }}</td>
+                    </tr>
+                    {% if booking.gift_aid %}
+                    <tr>
+                        <th>Gift Aid:</th>
+                        <td>Yes - Thank you for allowing us to claim Gift Aid on your donation</td>
+                    </tr>
+                    {% endif %}
+                </table>
+            </div>
+            
+            <div class="payment-details">
+                <h2>Payment Instructions</h2>
+                <p>Please complete your payment via bank transfer using the following details:</p>
+                
+                <table>
+                    <tr>
+                        <th>Account Name:</th>
+                        <td>{{ bank_details.account_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Sort Code:</th>
+                        <td>{{ bank_details.sort_code }}</td>
+                    </tr>
+                    <tr>
+                        <th>Account Number:</th>
+                        <td>{{ bank_details.account_number }}</td>
+                    </tr>
+                    <tr>
+                        <th>Payment Reference:</th>
+                        <td><strong>{{ payment_reference }}</strong></td>
+                    </tr>
+                    <tr>
+                        <th>Amount to Pay:</th>
+                        <td><strong>£{{ booking.donation_amount }}</strong></td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="important-note">
+                <p><strong>Important:</strong> Please include the payment reference when making your transfer so we can match your payment to your booking.</p>
+            </div>
+            
+            <p>If you have any questions about your booking or payment, please don't hesitate to contact us at <a href="mailto:event@sibfordfundraising.org">event@sibfordfundraising.org</a>.</p>
+            
+            <p>We look forward to seeing you at the event!</p>
+            
+            <p>Best regards,<br>The Sibford CATS Team</p>
+        </div>
+        
+        <div class="footer">
+            <p>Sibford CATS Fundraising Event</p>
+            <p>This email was sent to {{ booking.email }}</p>
+        </div>
+    </div>
+</body>
+</html>
