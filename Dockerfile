@@ -24,7 +24,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . /app/
 
 # Change to the Django project directory
-WORKDIR /app/sibford_donations
+WORKDIR /app/
 
 # Collect static files
 RUN python manage.py collectstatic --noinput
