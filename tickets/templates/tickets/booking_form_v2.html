@@ -10,13 +10,17 @@
         <form method="post" x-data="{
             numTickets: 1,
             ticketPrice: {{ ticket_price }},
-            extraDonation: 0,
+            totalDonation: {{ ticket_price }},
             giftAid: false,
             get ticketCost() {
                 return this.numTickets * this.ticketPrice;
             },
-            get totalDonation() {
-                return this.ticketCost + parseFloat(this.extraDonation || 0);
+            get extraDonation() {
+                const extra = parseFloat(this.totalDonation || 0) - this.ticketCost;
+                return extra > 0 ? extra : 0;
+            },
+            updateTotalFromTickets() {
+                this.totalDonation = this.ticketCost;
             }
         }">
             {% csrf_token %}
@@ -61,7 +65,8 @@
                             <input type="number" name="num_tickets" id="{{ form.num_tickets.id_for_label }}"
                                 class="w-full px-4 py-2 border border-stone-300 rounded-md focus:ring-2 focus:ring-stone-500 focus:border-stone-500"
                                 min="1"
-                                x-model="numTickets">
+                                x-model="numTickets"
+                                @input="updateTotalFromTickets()">
                             {% if form.num_tickets.errors %}
                             <p class="text-rose-600 text-sm mt-1">{{ form.num_tickets.errors.0 }}</p>
                             {% endif %}
@@ -69,43 +74,31 @@
 
                         <div>
                             <label class="block text-sm font-medium text-stone-700 mb-1">
-                                Ticket Cost
+                                Ticket Donations
                             </label>
                             <div class="w-full px-4 py-2 border border-stone-300 rounded-md bg-stone-50 text-stone-700">
-                                £<span x-text="ticketCost.toFixed(2)"></span>
+                                £<span x-text="ticketCost"></span>
                             </div>
                             <p class="text-sm text-stone-500 mt-1">
-                                £{{ ticket_price }} per ticket
+                                Suggested donation: £{{ ticket_price }} per ticket
                             </p>
                         </div>
 
-                        <div>
-                            <label for="{{ form.extra_donation.id_for_label }}" class="block text-sm font-medium text-stone-700 mb-1">
-                                Extra Donation (£) - Optional
+                        <div class="md:col-span-2">
+                            <label for="total_donation_display" class="block text-sm font-medium text-stone-700 mb-1">
+                                Total Donation (£)*
                             </label>
-                            <input type="number" name="extra_donation" id="{{ form.extra_donation.id_for_label }}"
-                                class="w-full px-4 py-2 border border-stone-300 rounded-md focus:ring-2 focus:ring-stone-500 focus:border-stone-500"
-                                min="0" step="0.01"
-                                placeholder="0.00"
-                                x-model="extraDonation">
+                            <input type="number" name="total_donation_display" id="total_donation_display"
+                                class="w-full px-4 py-2 border-2 border-stone-400 rounded-md focus:ring-2 focus:ring-stone-500 focus:border-stone-500 font-semibold text-lg"
+                                min="1"
+                                x-model.number="totalDonation">
+                            {{ form.extra_donation }}
                             <p class="text-sm text-stone-500 mt-1">
-                                Additional donation beyond ticket price
+                                Edit to adjust your total donation amount
                             </p>
                             {% if form.extra_donation.errors %}
                             <p class="text-rose-600 text-sm mt-1">{{ form.extra_donation.errors.0 }}</p>
                             {% endif %}
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-stone-700 mb-1">
-                                Total Donation
-                            </label>
-                            <div class="w-full px-4 py-2 border-2 border-stone-400 rounded-md bg-stone-100 text-stone-900 font-semibold text-lg">
-                                £<span x-text="totalDonation.toFixed(2)"></span>
-                            </div>
-                            <p class="text-sm text-stone-500 mt-1">
-                                Tickets + extra donation
-                            </p>
                         </div>
                     </div>
                 </div>
@@ -203,6 +196,21 @@
             if (!input.classList.contains('w-full')) {
                 input.classList.add('w-full', 'px-4', 'py-2', 'border', 'border-stone-300', 'rounded-md', 'focus:ring-2', 'focus:ring-stone-500', 'focus:border-stone-500');
             }
+        });
+
+        // Sync the extra_donation hidden field before form submission
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function() {
+            const totalDonationInput = document.getElementById('total_donation_display');
+            const numTicketsInput = document.querySelector('input[name="num_tickets"]');
+            const extraDonationInput = document.querySelector('input[name="extra_donation"]');
+            
+            const totalDonation = parseInt(totalDonationInput.value) || 0;
+            const numTickets = parseInt(numTicketsInput.value) || 1;
+            const ticketCost = numTickets * {{ ticket_price }};
+            const extraDonation = Math.max(0, totalDonation - ticketCost);
+            
+            extraDonationInput.value = extraDonation;
         });
     });
 </script>

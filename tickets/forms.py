@@ -159,22 +159,13 @@ class BookingFormV2(forms.ModelForm):
 
     TICKET_PRICE = 25
 
-    # Extra donation field (optional)
-    extra_donation = forms.DecimalField(
+    # Extra donation field (optional) - calculated from total donation
+    extra_donation = forms.IntegerField(
         label="Extra Donation (£)",
         min_value=0,
-        decimal_places=2,
         initial=0,
         required=False,
-        help_text="Optional additional donation beyond ticket price",
-        widget=forms.NumberInput(
-            attrs={
-                "class": "w-full px-4 py-2 border border-stone-300 rounded-md focus:ring-2 focus:ring-stone-500 focus:border-stone-500",
-                "min": 0,
-                "step": "0.01",
-                "placeholder": "0.00",
-            }
-        ),
+        widget=forms.HiddenInput(),
     )
 
     # Add a field to confirm Gift Aid eligibility
