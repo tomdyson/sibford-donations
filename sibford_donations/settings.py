@@ -149,4 +149,4 @@ BANK_DETAILS = {
 }
 
 # Admin notification email recipients
-ADMIN_NOTIFICATION_EMAILS = ["tom@torchbox.com"]
+ADMIN_NOTIFICATION_EMAILS = ["tom@torchbox.com", "sebannister@gmail.com "]
