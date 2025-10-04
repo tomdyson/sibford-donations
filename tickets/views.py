@@ -4,7 +4,7 @@ from django.db.models import Q, Sum
 from django.shortcuts import redirect
 from django.views.generic import CreateView, ListView, TemplateView
 
-from .forms import BookingForm, BookingFormV2, ReportFilterForm
+from .forms import BookingForm, BookingFormV2, BookingFormV3, ReportFilterForm
 from .models import Booking
 from .utils import send_admin_notification_email, send_booking_confirmation_email
 
@@ -49,6 +49,42 @@ class BookingCreateViewV2(CreateView):
     model = Booking
     form_class = BookingFormV2
     template_name = "tickets/booking_form_v2.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["ticket_price"] = self.form_class.TICKET_PRICE
+        return context
+
+    def form_valid(self, form):
+        # Save the booking to the database
+        self.object = form.save()
+
+        # Send confirmation email to the customer
+        email_sent = send_booking_confirmation_email(self.request, self.object)
+        if email_sent:
+            messages.success(
+                self.request,
+                "Your booking was successful! A confirmation email has been sent.",
+            )
+        else:
+            messages.warning(
+                self.request,
+                "Your booking was successful, but there was an issue sending the confirmation email.",
+            )
+
+        # Send notification email to admins
+        send_admin_notification_email(self.request, self.object)
+
+        # Redirect to the confirmation page with the booking ID
+        return redirect("booking_confirmation", pk=self.object.id)
+
+
+class BookingCreateViewV3(CreateView):
+    """Version 3: Fixed £20 per ticket + separate optional extra donation field."""
+
+    model = Booking
+    form_class = BookingFormV3
+    template_name = "tickets/booking_form_v3.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
