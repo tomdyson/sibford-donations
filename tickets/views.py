@@ -1,7 +1,10 @@
+from datetime import timedelta
+
 from django.conf import settings
 from django.contrib import messages
 from django.db.models import Q, Sum
 from django.shortcuts import redirect
+from django.utils import timezone
 from django.views.generic import CreateView, ListView, TemplateView
 
 from .forms import BookingForm, BookingFormV2, BookingFormV3, ReportFilterForm
@@ -56,6 +59,30 @@ class BookingCreateViewV2(CreateView):
         return context
 
     def form_valid(self, form):
+        # Check for duplicate submissions (same email within last 60 seconds)
+        email = form.cleaned_data.get("email")
+        num_tickets = form.cleaned_data.get("num_tickets")
+        donation_amount = num_tickets * self.form_class.TICKET_PRICE + (
+            form.cleaned_data.get("extra_donation") or 0
+        )
+
+        # Look for recent bookings with same email, tickets, and donation amount
+        cutoff_time = timezone.now() - timedelta(seconds=60)
+        recent_duplicate = Booking.objects.filter(
+            email=email,
+            num_tickets=num_tickets,
+            donation_amount=donation_amount,
+            created_at__gte=cutoff_time,
+        ).first()
+
+        if recent_duplicate:
+            # Redirect to the existing booking's confirmation page
+            messages.info(
+                self.request,
+                "This booking was already submitted. Showing your confirmation details.",
+            )
+            return redirect("booking_confirmation", pk=recent_duplicate.id)
+
         # Save the booking to the database
         self.object = form.save()
 
@@ -92,6 +119,30 @@ class BookingCreateViewV3(CreateView):
         return context
 
     def form_valid(self, form):
+        # Check for duplicate submissions (same email within last 60 seconds)
+        email = form.cleaned_data.get("email")
+        num_tickets = form.cleaned_data.get("num_tickets")
+        donation_amount = num_tickets * self.form_class.TICKET_PRICE + (
+            form.cleaned_data.get("extra_donation") or 0
+        )
+
+        # Look for recent bookings with same email, tickets, and donation amount
+        cutoff_time = timezone.now() - timedelta(seconds=60)
+        recent_duplicate = Booking.objects.filter(
+            email=email,
+            num_tickets=num_tickets,
+            donation_amount=donation_amount,
+            created_at__gte=cutoff_time,
+        ).first()
+
+        if recent_duplicate:
+            # Redirect to the existing booking's confirmation page
+            messages.info(
+                self.request,
+                "This booking was already submitted. Showing your confirmation details.",
+            )
+            return redirect("booking_confirmation", pk=recent_duplicate.id)
+
         # Save the booking to the database
         self.object = form.save()
 
