@@ -149,4 +149,8 @@ BANK_DETAILS = {
 }
 
 # Admin notification email recipients
-ADMIN_NOTIFICATION_EMAILS = ["tom@torchbox.com", "sebannister@gmail.com "]
+if os.environ.get("DATABASE_URL"):
+    ADMIN_NOTIFICATION_EMAILS = ["tom@torchbox.com", "sebannister@gmail.com "]
+# For testing purposes, only send to tom@torchbox.com
+else:
+    ADMIN_NOTIFICATION_EMAILS = ["tom@torchbox.com"]
